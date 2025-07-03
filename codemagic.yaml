@@ -1,12 +1,18 @@
 workflows:
-  ios-release:
-    name: iOS Release
+  ios-unsigned:
+    name: Build iOS unsigned IPA
     environment:
       flutter: stable
       xcode: latest
     scripts:
-      - flutter build ios --no-codesign
-      - mkdir -p build/ios/ipa
-      - zip -r build/ios/ipa/Runner.app.zip build/ios/iphonesimulator/Runner.app
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Build unsigned IPA
+        script: flutter build ios --no-codesign --release
+      - name: Package IPA manually
+        script: |
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r Runner.ipa Payload
     artifacts:
-      - build/ios/ipa/Runner.app.zip
+      - Runner.ipa
